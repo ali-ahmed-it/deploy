@@ -1,117 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ATLAS</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body { width: 100vw; height: 100vh; overflow: hidden; }
-
-    #map { width: 100%; height: 100%; }
-
-    /* Country name tooltip */
-    .country-label {
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 0.95rem;
+    body {
+      background: #000;
+      overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      white-space: nowrap;
+    }
+
+    #globe { width: 100vw; height: 100vh; }
+
+    /* ── ATLAS Title ── */
+    #title {
+      position: fixed;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      font-size: 3.8rem;
+      font-weight: 900;
+      letter-spacing: 0.45em;
+      color: #ffffff;
+      text-shadow:
+        0 0 10px rgba(130,200,255,1),
+        0 0 30px rgba(100,170,255,0.8),
+        0 0 70px rgba(80,140,255,0.5),
+        0 0 120px rgba(60,100,255,0.3);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #title span {
+      display: inline-block;
+      background: linear-gradient(135deg, #a5d8ff, #ffffff, #c3aeff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Legend ── */
+    #legend {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 30px;
+      padding: 10px 24px;
+      z-index: 100;
       pointer-events: none;
     }
 
-    /* Click hint bar at bottom */
-    .hint {
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Hint ── */
+    #hint {
       position: fixed;
-      bottom: 18px;
+      top: 110px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-family: 'Segoe UI', sans-serif;
-      z-index: 999;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
       pointer-events: none;
+      z-index: 100;
     }
   </style>
 </head>
 <body>
 
-  <div id="map"></div>
-  <div class="hint">🌍 Hover a country to see its name — Click to open Wikipedia</div>
+  <div id="title"><span>✦ ATLAS</span></div>
+  <div id="hint">HOVER TO EXPLORE · CLICK TO OPEN WIKIPEDIA</div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <div id="globe"></div>
+
+  <div id="legend">
+    <div class="legend-item"><div class="dot" style="background:#f472b6"></div>Country</div>
+    <div class="legend-item"><div class="dot" style="background:#38bdf8"></div>Ocean / Sea</div>
+    <div class="legend-item"><div class="dot" style="background:#34d399"></div>Lake</div>
+    <div class="legend-item"><div class="dot" style="background:#fbbf24"></div>Mountain Range</div>
+  </div>
+
   <script>
-    // ── Map Setup ────────────────────────────────────────────
-    const map = L.map('map', {
-      center: [20, 0],
-      zoom: 2.4,
-      zoomControl: true,
-      attributionControl: false
-    });
+    // ── Geographic Features (Oceans, Seas, Lakes, Mountains) ──
+    const geoFeatures = [
+      // Oceans
+      { name: 'Pacific Ocean',   lat: 0,   lng: -160, type: 'ocean',    wiki: 'Pacific_Ocean' },
+      { name: 'Atlantic Ocean',  lat: 5,   lng: -30,  type: 'ocean',    wiki: 'Atlantic_Ocean' },
+      { name: 'Indian Ocean',    lat: -25, lng: 80,   type: 'ocean',    wiki: 'Indian_Ocean' },
+      { name: 'Arctic Ocean',    lat: 82,  lng: 0,    type: 'ocean',    wiki: 'Arctic_Ocean' },
+      { name: 'Southern Ocean',  lat: -68, lng: 30,   type: 'ocean',    wiki: 'Southern_Ocean' },
+      // Seas
+      { name: 'Mediterranean Sea', lat: 35, lng: 18,  type: 'sea',      wiki: 'Mediterranean_Sea' },
+      { name: 'Caribbean Sea',     lat: 15, lng: -74, type: 'sea',      wiki: 'Caribbean_Sea' },
+      { name: 'South China Sea',   lat: 12, lng: 113, type: 'sea',      wiki: 'South_China_Sea' },
+      { name: 'Arabian Sea',       lat: 16, lng: 64,  type: 'sea',      wiki: 'Arabian_Sea' },
+      { name: 'Red Sea',           lat: 20, lng: 38,  type: 'sea',      wiki: 'Red_Sea' },
+      { name: 'Black Sea',         lat: 43, lng: 33,  type: 'sea',      wiki: 'Black_Sea' },
+      { name: 'Caspian Sea',       lat: 42, lng: 51,  type: 'sea',      wiki: 'Caspian_Sea' },
+      { name: 'Bering Sea',        lat: 58, lng: -175,type: 'sea',      wiki: 'Bering_Sea' },
+      { name: 'North Sea',         lat: 56, lng: 4,   type: 'sea',      wiki: 'North_Sea' },
+      { name: 'Persian Gulf',      lat: 26, lng: 52,  type: 'sea',      wiki: 'Persian_Gulf' },
+      // Lakes
+      { name: 'Lake Superior',     lat: 47, lng: -85, type: 'lake',     wiki: 'Lake_Superior' },
+      { name: 'Lake Victoria',     lat: -1, lng: 33,  type: 'lake',     wiki: 'Lake_Victoria' },
+      { name: 'Lake Baikal',       lat: 53, lng: 108, type: 'lake',     wiki: 'Lake_Baikal' },
+      { name: 'Lake Huron',        lat: 44, lng: -82, type: 'lake',     wiki: 'Lake_Huron' },
+      { name: 'Lake Tanganyika',   lat: -6, lng: 29,  type: 'lake',     wiki: 'Lake_Tanganyika' },
+      { name: 'Lake Michigan',     lat: 44, lng: -87, type: 'lake',     wiki: 'Lake_Michigan' },
+      // Mountain Ranges
+      { name: 'Himalayas',         lat: 28,  lng: 84,  type: 'mountain', wiki: 'Himalayas' },
+      { name: 'Andes',             lat: -20, lng: -68, type: 'mountain', wiki: 'Andes' },
+      { name: 'Alps',              lat: 46,  lng: 8,   type: 'mountain', wiki: 'Alps' },
+      { name: 'Rocky Mountains',   lat: 45,  lng: -110,type: 'mountain', wiki: 'Rocky_Mountains' },
+      { name: 'Atlas Mountains',   lat: 32,  lng: -4,  type: 'mountain', wiki: 'Atlas_Mountains' },
+      { name: 'Ural Mountains',    lat: 55,  lng: 60,  type: 'mountain', wiki: 'Ural_Mountains' },
+      { name: 'Caucasus',          lat: 42,  lng: 44,  type: 'mountain', wiki: 'Caucasus' },
+      { name: 'Karakoram',         lat: 36,  lng: 76,  type: 'mountain', wiki: 'Karakoram' },
+    ];
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    // ── Country Styles ───────────────────────────────────────
-    const defaultStyle = {
-      color: '#ffffff',
-      weight: 0.8,
-      fillColor: '#6d28d9',
-      fillOpacity: 0.25
+    const typeColor = {
+      ocean:    'rgba(56,189,248,0.9)',
+      sea:      'rgba(125,211,252,0.9)',
+      lake:     'rgba(52,211,153,0.9)',
+      mountain: 'rgba(251,191,36,0.9)'
     };
 
-    const hoverStyle = {
-      color: '#ffffff',
-      weight: 1.5,
-      fillColor: '#f472b6',
-      fillOpacity: 0.65
+    const typeEmoji = {
+      ocean: '🌊', sea: '🌊', lake: '🏞️', mountain: '⛰️'
     };
 
-    // ── GeoJSON Country Boundaries ───────────────────────────
-    let geojsonLayer;
-
+    // ── Globe Setup ───────────────────────────────────────────
     fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
-      .then(res => res.json())
-      .then(data => {
-        geojsonLayer = L.geoJSON(data, {
-          style: defaultStyle,
-          onEachFeature: (feature, layer) => {
-            const name = feature.properties.ADMIN || feature.properties.name;
+      .then(r => r.json())
+      .then(countries => {
 
-            // Tooltip with country name
-            layer.bindTooltip(name, {
-              className: 'country-label',
-              sticky: true,
-              direction: 'top',
-              offset: [0, -6]
-            });
+        let hoveredPolygon = null;
 
-            // Hover effects
-            layer.on('mouseover', function () {
-              this.setStyle(hoverStyle);
-              this.bringToFront();
-            });
+        const globe = Globe()
+          (document.getElementById('globe'))
 
-            layer.on('mouseout', function () {
-              geojsonLayer.resetStyle(this);
-            });
+          // Earth textures
+          .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+          .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+          .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
 
-            // Click → open Wikipedia
-            layer.on('click', function () {
-              const wikiName = name.replace(/ /g, '_');
-              window.open(`https://en.wikipedia.org/wiki/${wikiName}`, '_blank');
-            });
-          }
-        }).addTo(map);
+          // Country polygons
+          .polygonsData(countries.features)
+          .polygonCapColor(feat =>
+            feat === hoveredPolygon
+              ? 'rgba(244,114,182,0.55)'
+              : 'rgba(255,255,255,0.03)')
+          .polygonSideColor(() => 'rgba(255,255,255,0.04)')
+          .polygonStrokeColor(() => 'rgba(255,255,255,0.25)')
+          .polygonAltitude(feat => feat === hoveredPolygon ? 0.015 : 0.006)
+
+          // Country tooltip
+          .polygonLabel(({ properties: d }) => `
+            <div style="
+              background: rgba(0,0,0,0.82);
+              color: #fff;
+              padding: 9px 18px;
+              border-radius: 10px;
+              font-size: 1rem;
+              font-weight: 700;
+              font-family: Segoe UI, sans-serif;
+              letter-spacing: 0.05em;
+              border: 1px solid rgba(244,114,182,0.5);
+              box-shadow: 0 0 20px rgba(244,114,182,0.3);
+            ">
+              🌍 ${d.ADMIN || d.name}
+              <div style="font-size:0.72rem;font-weight:400;opacity:0.7;margin-top:3px;">Click to open Wikipedia</div>
+            </div>`)
+
+          // Country hover
+          .onPolygonHover(polygon => {
+            hoveredPolygon = polygon;
+            globe
+              .polygonCapColor(feat =>
+                feat === hoveredPolygon
+                  ? 'rgba(244,114,182,0.55)'
+                  : 'rgba(255,255,255,0.03)')
+              .polygonAltitude(feat => feat === hoveredPolygon ? 0.015 : 0.006);
+            document.getElementById('globe').style.cursor = polygon ? 'pointer' : 'grab';
+          })
+
+          // Country click → Wikipedia
+          .onPolygonClick(({ properties: d }) => {
+            const name = (d.ADMIN || d.name).replace(/ /g, '_');
+            window.open(`https://en.wikipedia.org/wiki/${name}`, '_blank');
+          })
+
+          // Geographic feature labels
+          .labelsData(geoFeatures)
+          .labelLat(d => d.lat)
+          .labelLng(d => d.lng)
+          .labelText(d => d.name)
+          .labelSize(d => d.type === 'ocean' ? 1.6 : d.type === 'sea' ? 1.1 : 0.85)
+          .labelColor(d => typeColor[d.type])
+          .labelResolution(3)
+          .labelDotRadius(d => d.type === 'ocean' ? 0 : 0.25)
+          .labelAltitude(0.01)
+
+          // Label tooltip
+          .labelLabel(d => `
+            <div style="
+              background: rgba(0,0,0,0.82);
+              color: #fff;
+              padding: 9px 18px;
+              border-radius: 10px;
+              font-size: 1rem;
+              font-weight: 700;
+              font-family: Segoe UI, sans-serif;
+              border: 1px solid ${typeColor[d.type]};
+              box-shadow: 0 0 20px ${typeColor[d.type].replace('0.9','0.3')};
+            ">
+              ${typeEmoji[d.type]} ${d.name}
+              <div style="font-size:0.72rem;font-weight:400;opacity:0.7;margin-top:3px;">Click to open Wikipedia</div>
+            </div>`)
+
+          // Label click → Wikipedia
+          .onLabelClick(d => {
+            window.open(`https://en.wikipedia.org/wiki/${d.wiki}`, '_blank');
+          })
+
+          .width(window.innerWidth)
+          .height(window.innerHeight);
+
+        // Auto-rotate
+        globe.controls().autoRotate = true;
+        globe.controls().autoRotateSpeed = 0.5;
+        globe.controls().enableZoom = true;
+
+        // Resize
+        window.addEventListener('resize', () => {
+          globe.width(window.innerWidth).height(window.innerHeight);
+        });
       });
   </script>
 
