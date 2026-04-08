@@ -40,8 +40,7 @@
       border:1px solid rgba(244,114,182,0.55);
       box-shadow:0 0 24px rgba(244,114,182,0.25);
       display:none; white-space:nowrap;
-      transform:translate(-50%, -140%);
-      transition: opacity 0.15s;
+      transform:translate(-50%,-140%);
     }
     #tooltip small {
       display:block; font-size:0.68rem; font-weight:400;
@@ -60,7 +59,6 @@
     #credit {
       position:fixed; bottom:22px; left:28px;
       z-index:100; pointer-events:none;
-      font-family:'Segoe UI',sans-serif;
       font-size:0.78rem; font-weight:400;
       letter-spacing:0.08em;
       color:rgba(255,255,255,0.45);
@@ -73,6 +71,146 @@
       background-clip:text;
       filter:drop-shadow(0 0 6px rgba(180,150,255,0.5));
     }
+
+    /* ── Left Panel ── */
+    #panel {
+      position:fixed; left:28px; top:50%; transform:translateY(-50%);
+      display:flex; flex-direction:column; gap:16px;
+      z-index:200;
+    }
+
+    .panel-btn {
+      display:flex; align-items:center; gap:0;
+      cursor:pointer; border:none; background:none; padding:0;
+      position:relative;
+    }
+
+    .btn-icon {
+      width:52px; height:52px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem;
+      background:rgba(10,10,30,0.75);
+      backdrop-filter:blur(12px);
+      border:1.5px solid rgba(255,255,255,0.12);
+      box-shadow:0 4px 24px rgba(0,0,0,0.5);
+      transition:all 0.3s ease;
+      flex-shrink:0;
+    }
+
+    .btn-label {
+      position:absolute; left:62px;
+      background:rgba(10,10,30,0.85);
+      backdrop-filter:blur(10px);
+      color:rgba(255,255,255,0.85);
+      font-size:0.72rem; font-weight:600;
+      letter-spacing:0.1em;
+      padding:5px 13px; border-radius:20px;
+      border:1px solid rgba(255,255,255,0.1);
+      white-space:nowrap;
+      opacity:0; pointer-events:none;
+      transform:translateX(-6px);
+      transition:all 0.25s ease;
+    }
+
+    .panel-btn:hover .btn-label {
+      opacity:1; transform:translateX(0);
+    }
+
+    /* Weather */
+    .panel-btn.weather .btn-icon {
+      color:#60d8fa;
+      border-color:rgba(96,216,250,0.3);
+    }
+    .panel-btn.weather:hover .btn-icon,
+    .panel-btn.weather.active .btn-icon {
+      background:rgba(96,216,250,0.2);
+      border-color:rgba(96,216,250,0.7);
+      box-shadow:0 0 20px rgba(96,216,250,0.4), 0 4px 24px rgba(0,0,0,0.5);
+    }
+    .panel-btn.weather.active .btn-icon { animation:pulse-blue 2s infinite; }
+
+    /* Marine */
+    .panel-btn.marine .btn-icon {
+      color:#34d399;
+      border-color:rgba(52,211,153,0.3);
+    }
+    .panel-btn.marine:hover .btn-icon,
+    .panel-btn.marine.active .btn-icon {
+      background:rgba(52,211,153,0.2);
+      border-color:rgba(52,211,153,0.7);
+      box-shadow:0 0 20px rgba(52,211,153,0.4), 0 4px 24px rgba(0,0,0,0.5);
+    }
+    .panel-btn.marine.active .btn-icon { animation:pulse-green 2s infinite; }
+
+    /* Flights */
+    .panel-btn.flights .btn-icon {
+      color:#f472b6;
+      border-color:rgba(244,114,182,0.3);
+    }
+    .panel-btn.flights:hover .btn-icon,
+    .panel-btn.flights.active .btn-icon {
+      background:rgba(244,114,182,0.2);
+      border-color:rgba(244,114,182,0.7);
+      box-shadow:0 0 20px rgba(244,114,182,0.4), 0 4px 24px rgba(0,0,0,0.5);
+    }
+    .panel-btn.flights.active .btn-icon { animation:pulse-pink 2s infinite; }
+
+    @keyframes pulse-blue  { 0%,100%{box-shadow:0 0 20px rgba(96,216,250,0.4)}  50%{box-shadow:0 0 36px rgba(96,216,250,0.8)} }
+    @keyframes pulse-green { 0%,100%{box-shadow:0 0 20px rgba(52,211,153,0.4)}  50%{box-shadow:0 0 36px rgba(52,211,153,0.8)} }
+    @keyframes pulse-pink  { 0%,100%{box-shadow:0 0 20px rgba(244,114,182,0.4)} 50%{box-shadow:0 0 36px rgba(244,114,182,0.8)} }
+
+    /* ── Live Overlay ── */
+    #overlay {
+      position:fixed; top:0; left:0;
+      width:100vw; height:100vh;
+      z-index:150; display:none;
+      flex-direction:column;
+    }
+
+    #overlay-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 20px 10px 100px;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+      pointer-events:none;
+    }
+
+    #overlay-title {
+      font-size:1rem; font-weight:700; letter-spacing:0.18em;
+      display:flex; align-items:center; gap:10px;
+    }
+
+    #live-badge {
+      background:#ef4444; color:#fff;
+      font-size:0.62rem; font-weight:800; letter-spacing:0.12em;
+      padding:2px 8px; border-radius:20px;
+      animation:blink 1.4s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    #close-btn {
+      position:fixed; top:14px; right:22px;
+      z-index:300; cursor:pointer;
+      background:rgba(10,10,30,0.8); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.15); border-radius:50%;
+      width:40px; height:40px; display:none;
+      align-items:center; justify-content:center;
+      font-size:1.1rem; color:rgba(255,255,255,0.8);
+      transition:all 0.2s;
+    }
+    #close-btn:hover { background:rgba(239,68,68,0.3); border-color:rgba(239,68,68,0.6); color:#fff; }
+
+    #overlay-frame {
+      flex:1; width:100%; height:calc(100vh);
+      border:none; opacity:0;
+      transition:opacity 0.5s ease;
+    }
+
+    #overlay-frame.loaded { opacity:1; }
+
+    /* Dim globe when overlay is active */
+    body.overlay-active canvas { filter:brightness(0.25); }
+    body.overlay-active #title { opacity:0.3; }
+    body.overlay-active #hint  { opacity:0; }
   </style>
 </head>
 <body>
@@ -98,7 +236,96 @@
   <span>Khaula</span>
 </div>
 
+<!-- Left Panel -->
+<div id="panel">
+  <button class="panel-btn weather" onclick="toggleLayer('weather')">
+    <div class="btn-icon">🌪️</div>
+    <div class="btn-label">LIVE WEATHER</div>
+  </button>
+  <button class="panel-btn marine" onclick="toggleLayer('marine')">
+    <div class="btn-icon">🚢</div>
+    <div class="btn-label">MARINE TRAFFIC</div>
+  </button>
+  <button class="panel-btn flights" onclick="toggleLayer('flights')">
+    <div class="btn-icon">✈️</div>
+    <div class="btn-label">FLIGHT TRAFFIC</div>
+  </button>
+</div>
+
+<!-- Close button -->
+<div id="close-btn" onclick="closeLayer()">✕</div>
+
+<!-- Live Overlay -->
+<div id="overlay">
+  <iframe id="overlay-frame" allowfullscreen></iframe>
+</div>
+
 <script>
+// ── Layer Config ──────────────────────────────────────
+const LAYERS = {
+  weather: {
+    label: '🌪️ LIVE WEATHER',
+    color: '#60d8fa',
+    url: 'https://embed.windy.com/embed2.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=3&overlay=wind&product=ecmwf&level=surface&lat=20&lon=0&detailLat=20&detailLon=0&detail=false&pressure=false&message=false'
+  },
+  marine: {
+    label: '🚢 MARINE TRAFFIC',
+    color: '#34d399',
+    url: 'https://www.vesselfinder.com/widgetb?width=100%25&height=100%25&longitude=0&latitude=20&zoom=3&show_names=1&show_speed=0&clickable=1'
+  },
+  flights: {
+    label: '✈️ FLIGHT TRAFFIC',
+    color: '#f472b6',
+    url: 'https://globe.adsbexchange.com/?lat=20&lon=0&zoom=3'
+  }
+};
+
+let activeLayer = null;
+
+function toggleLayer(key) {
+  if (activeLayer === key) { closeLayer(); return; }
+
+  activeLayer = key;
+  const layer = LAYERS[key];
+
+  // Update buttons
+  document.querySelectorAll('.panel-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.panel-btn.${key}`).classList.add('active');
+
+  // Show overlay
+  const overlay = document.getElementById('overlay');
+  const frame   = document.getElementById('overlay-frame');
+  const closeBtn = document.getElementById('close-btn');
+
+  frame.classList.remove('loaded');
+  frame.src = layer.url;
+  frame.onload = () => frame.classList.add('loaded');
+
+  overlay.style.display = 'flex';
+  closeBtn.style.display = 'flex';
+  document.body.classList.add('overlay-active');
+
+  // Hint text
+  document.getElementById('hint').textContent = '';
+}
+
+function closeLayer() {
+  activeLayer = null;
+  document.querySelectorAll('.panel-btn').forEach(b => b.classList.remove('active'));
+
+  const frame = document.getElementById('overlay-frame');
+  frame.classList.remove('loaded');
+  frame.src = '';
+
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('close-btn').style.display = 'none';
+  document.body.classList.remove('overlay-active');
+  document.getElementById('hint').textContent = 'HOVER TO EXPLORE · CLICK TO OPEN WIKIPEDIA';
+}
+
+// Close with Escape key
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeLayer(); });
+
 // ── Renderer & Scene ───────────────────────────────────
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -113,9 +340,9 @@ const starGeo = new THREE.BufferGeometry();
 const starArr = new Float32Array(12000);
 for (let i = 0; i < 12000; i++) starArr[i] = (Math.random() - 0.5) * 400;
 starGeo.setAttribute('position', new THREE.BufferAttribute(starArr, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.18, transparent: true, opacity: 0.75 })));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0xffffff, size:0.18, transparent:true, opacity:0.75 })));
 
-// ── Globe Mesh ────────────────────────────────────────
+// ── Globe ─────────────────────────────────────────────
 const texLoader = new THREE.TextureLoader();
 let texturesLoaded = 0;
 function onTexLoad() { if (++texturesLoaded >= 2) document.getElementById('loading').style.display = 'none'; }
@@ -123,26 +350,20 @@ function onTexLoad() { if (++texturesLoaded >= 2) document.getElementById('loadi
 const globe = new THREE.Mesh(
   new THREE.SphereGeometry(1, 72, 72),
   new THREE.MeshPhongMaterial({
-    map:         texLoader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg', onTexLoad),
-    bumpMap:     texLoader.load('https://unpkg.com/three-globe/example/img/earth-topology.png', onTexLoad),
-    bumpScale:   0.055,
-    specular:    new THREE.Color(0x1a3a5c),
-    shininess:   18
+    map:      texLoader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg', onTexLoad),
+    bumpMap:  texLoader.load('https://unpkg.com/three-globe/example/img/earth-topology.png', onTexLoad),
+    bumpScale:0.055,
+    specular: new THREE.Color(0x1a3a5c),
+    shininess:18
   })
 );
 scene.add(globe);
 
-// ── Atmosphere ────────────────────────────────────────
-scene.add(new THREE.Mesh(
-  new THREE.SphereGeometry(1.028, 64, 64),
-  new THREE.MeshPhongMaterial({ color: 0x3388ff, transparent: true, opacity: 0.09 })
-));
-scene.add(new THREE.Mesh(
-  new THREE.SphereGeometry(1.055, 64, 64),
-  new THREE.MeshPhongMaterial({ color: 0x1155cc, transparent: true, opacity: 0.04, side: THREE.BackSide })
-));
+// Atmosphere
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.028,64,64), new THREE.MeshPhongMaterial({ color:0x3388ff, transparent:true, opacity:0.09 })));
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.055,64,64), new THREE.MeshPhongMaterial({ color:0x1155cc, transparent:true, opacity:0.04, side:THREE.BackSide })));
 
-// ── Lighting ──────────────────────────────────────────
+// Lighting
 scene.add(new THREE.AmbientLight(0xffffff, 0.38));
 const sun = new THREE.DirectionalLight(0xfff8e8, 1.5);
 sun.position.set(5, 3, 5);
@@ -150,80 +371,61 @@ scene.add(sun);
 
 // ── Geographic Features ───────────────────────────────
 const FEATURES = [
-  { name:'Pacific Ocean',     lat:0,    lng:-160, type:'ocean',    emoji:'🌊', wiki:'Pacific_Ocean',     r:28 },
-  { name:'Atlantic Ocean',    lat:10,   lng:-30,  type:'ocean',    emoji:'🌊', wiki:'Atlantic_Ocean',    r:26 },
-  { name:'Indian Ocean',      lat:-20,  lng:80,   type:'ocean',    emoji:'🌊', wiki:'Indian_Ocean',      r:26 },
-  { name:'Arctic Ocean',      lat:83,   lng:0,    type:'ocean',    emoji:'🌊', wiki:'Arctic_Ocean',      r:20 },
-  { name:'Southern Ocean',    lat:-68,  lng:0,    type:'ocean',    emoji:'🌊', wiki:'Southern_Ocean',    r:20 },
-  { name:'Mediterranean Sea', lat:36,   lng:15,   type:'sea',      emoji:'🌊', wiki:'Mediterranean_Sea', r:12 },
-  { name:'Caribbean Sea',     lat:15,   lng:-75,  type:'sea',      emoji:'🌊', wiki:'Caribbean_Sea',     r:12 },
-  { name:'South China Sea',   lat:12,   lng:114,  type:'sea',      emoji:'🌊', wiki:'South_China_Sea',   r:12 },
-  { name:'Arabian Sea',       lat:16,   lng:64,   type:'sea',      emoji:'🌊', wiki:'Arabian_Sea',       r:12 },
-  { name:'Red Sea',           lat:20,   lng:38,   type:'sea',      emoji:'🌊', wiki:'Red_Sea',           r:9  },
-  { name:'Black Sea',         lat:43,   lng:33,   type:'sea',      emoji:'🌊', wiki:'Black_Sea',         r:8  },
-  { name:'North Sea',         lat:56,   lng:4,    type:'sea',      emoji:'🌊', wiki:'North_Sea',         r:8  },
-  { name:'Persian Gulf',      lat:26,   lng:52,   type:'sea',      emoji:'🌊', wiki:'Persian_Gulf',      r:8  },
-  { name:'Caspian Sea',       lat:42,   lng:51,   type:'sea',      emoji:'🌊', wiki:'Caspian_Sea',       r:7  },
-  { name:'Bay of Bengal',     lat:15,   lng:89,   type:'sea',      emoji:'🌊', wiki:'Bay_of_Bengal',     r:10 },
-  { name:'Lake Superior',     lat:47,   lng:-85,  type:'lake',     emoji:'🏞️', wiki:'Lake_Superior',     r:6  },
-  { name:'Lake Victoria',     lat:-1,   lng:33,   type:'lake',     emoji:'🏞️', wiki:'Lake_Victoria',     r:5  },
-  { name:'Lake Baikal',       lat:53,   lng:108,  type:'lake',     emoji:'🏞️', wiki:'Lake_Baikal',       r:5  },
-  { name:'Lake Tanganyika',   lat:-6,   lng:29,   type:'lake',     emoji:'🏞️', wiki:'Lake_Tanganyika',   r:5  },
-  { name:'Lake Michigan',     lat:44,   lng:-87,  type:'lake',     emoji:'🏞️', wiki:'Lake_Michigan',     r:5  },
-  { name:'Himalayas',         lat:28,   lng:84,   type:'mountain', emoji:'⛰️', wiki:'Himalayas',         r:8  },
-  { name:'Andes',             lat:-20,  lng:-68,  type:'mountain', emoji:'⛰️', wiki:'Andes',             r:8  },
-  { name:'Alps',              lat:46,   lng:9,    type:'mountain', emoji:'⛰️', wiki:'Alps',              r:6  },
-  { name:'Rocky Mountains',   lat:45,   lng:-110, type:'mountain', emoji:'⛰️', wiki:'Rocky_Mountains',   r:8  },
-  { name:'Atlas Mountains',   lat:32,   lng:-4,   type:'mountain', emoji:'⛰️', wiki:'Atlas_Mountains',   r:7  },
-  { name:'Caucasus',          lat:42,   lng:44,   type:'mountain', emoji:'⛰️', wiki:'Caucasus',          r:6  },
-  { name:'Karakoram',         lat:36,   lng:76,   type:'mountain', emoji:'⛰️', wiki:'Karakoram',         r:6  },
-  { name:'Appalachians',      lat:38,   lng:-80,  type:'mountain', emoji:'⛰️', wiki:'Appalachian_Mountains', r:7 },
+  { name:'Pacific Ocean',     lat:0,    lng:-160, type:'ocean',    emoji:'🌊', wiki:'Pacific_Ocean',         r:28 },
+  { name:'Atlantic Ocean',    lat:10,   lng:-30,  type:'ocean',    emoji:'🌊', wiki:'Atlantic_Ocean',        r:26 },
+  { name:'Indian Ocean',      lat:-20,  lng:80,   type:'ocean',    emoji:'🌊', wiki:'Indian_Ocean',          r:26 },
+  { name:'Arctic Ocean',      lat:83,   lng:0,    type:'ocean',    emoji:'🌊', wiki:'Arctic_Ocean',          r:20 },
+  { name:'Southern Ocean',    lat:-68,  lng:0,    type:'ocean',    emoji:'🌊', wiki:'Southern_Ocean',        r:20 },
+  { name:'Mediterranean Sea', lat:36,   lng:15,   type:'sea',      emoji:'🌊', wiki:'Mediterranean_Sea',     r:12 },
+  { name:'Caribbean Sea',     lat:15,   lng:-75,  type:'sea',      emoji:'🌊', wiki:'Caribbean_Sea',         r:12 },
+  { name:'South China Sea',   lat:12,   lng:114,  type:'sea',      emoji:'🌊', wiki:'South_China_Sea',       r:12 },
+  { name:'Arabian Sea',       lat:16,   lng:64,   type:'sea',      emoji:'🌊', wiki:'Arabian_Sea',           r:12 },
+  { name:'Red Sea',           lat:20,   lng:38,   type:'sea',      emoji:'🌊', wiki:'Red_Sea',               r:9  },
+  { name:'Black Sea',         lat:43,   lng:33,   type:'sea',      emoji:'🌊', wiki:'Black_Sea',             r:8  },
+  { name:'North Sea',         lat:56,   lng:4,    type:'sea',      emoji:'🌊', wiki:'North_Sea',             r:8  },
+  { name:'Persian Gulf',      lat:26,   lng:52,   type:'sea',      emoji:'🌊', wiki:'Persian_Gulf',          r:8  },
+  { name:'Caspian Sea',       lat:42,   lng:51,   type:'sea',      emoji:'🌊', wiki:'Caspian_Sea',           r:7  },
+  { name:'Bay of Bengal',     lat:15,   lng:89,   type:'sea',      emoji:'🌊', wiki:'Bay_of_Bengal',         r:10 },
+  { name:'Lake Superior',     lat:47,   lng:-85,  type:'lake',     emoji:'🏞️', wiki:'Lake_Superior',         r:6  },
+  { name:'Lake Victoria',     lat:-1,   lng:33,   type:'lake',     emoji:'🏞️', wiki:'Lake_Victoria',         r:5  },
+  { name:'Lake Baikal',       lat:53,   lng:108,  type:'lake',     emoji:'🏞️', wiki:'Lake_Baikal',           r:5  },
+  { name:'Lake Tanganyika',   lat:-6,   lng:29,   type:'lake',     emoji:'🏞️', wiki:'Lake_Tanganyika',       r:5  },
+  { name:'Lake Michigan',     lat:44,   lng:-87,  type:'lake',     emoji:'🏞️', wiki:'Lake_Michigan',         r:5  },
+  { name:'Himalayas',         lat:28,   lng:84,   type:'mountain', emoji:'⛰️', wiki:'Himalayas',             r:8  },
+  { name:'Andes',             lat:-20,  lng:-68,  type:'mountain', emoji:'⛰️', wiki:'Andes',                 r:8  },
+  { name:'Alps',              lat:46,   lng:9,    type:'mountain', emoji:'⛰️', wiki:'Alps',                  r:6  },
+  { name:'Rocky Mountains',   lat:45,   lng:-110, type:'mountain', emoji:'⛰️', wiki:'Rocky_Mountains',       r:8  },
+  { name:'Atlas Mountains',   lat:32,   lng:-4,   type:'mountain', emoji:'⛰️', wiki:'Atlas_Mountains',       r:7  },
+  { name:'Caucasus',          lat:42,   lng:44,   type:'mountain', emoji:'⛰️', wiki:'Caucasus',              r:6  },
+  { name:'Karakoram',         lat:36,   lng:76,   type:'mountain', emoji:'⛰️', wiki:'Karakoram',             r:6  },
+  { name:'Appalachians',      lat:38,   lng:-80,  type:'mountain', emoji:'⛰️', wiki:'Appalachian_Mountains', r:7  },
 ];
 
 const TYPE_COLOR = { ocean:'#38bdf8', sea:'#7dd3fc', lake:'#34d399', mountain:'#fbbf24' };
 const TYPE_SIZE  = { ocean:'0.82rem', sea:'0.70rem', lake:'0.62rem', mountain:'0.62rem' };
 
 function ll2v(lat, lng) {
-  const phi = lat * Math.PI / 180;
-  const tht = lng * Math.PI / 180;
-  return new THREE.Vector3(Math.cos(phi) * Math.cos(tht), Math.sin(phi), -Math.cos(phi) * Math.sin(tht));
+  const phi = lat * Math.PI / 180, tht = lng * Math.PI / 180;
+  return new THREE.Vector3(Math.cos(phi)*Math.cos(tht), Math.sin(phi), -Math.cos(phi)*Math.sin(tht));
 }
-
 function hitLL(worldPt) {
   const v = globe.worldToLocal(worldPt.clone()).normalize();
-  return {
-    lat: Math.asin(Math.max(-1, Math.min(1, v.y))) * 180 / Math.PI,
-    lng: Math.atan2(-v.z, v.x) * 180 / Math.PI
-  };
+  return { lat: Math.asin(Math.max(-1,Math.min(1,v.y)))*180/Math.PI, lng: Math.atan2(-v.z,v.x)*180/Math.PI };
 }
-
-function gcDeg(la1, ln1, la2, ln2) {
-  const R = Math.PI / 180;
-  const dLa = (la2 - la1) * R, dLn = (ln2 - ln1) * R;
-  const a = Math.sin(dLa/2)**2 + Math.cos(la1*R)*Math.cos(la2*R)*Math.sin(dLn/2)**2;
-  return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) / R;
+function gcDeg(la1,ln1,la2,ln2) {
+  const R=Math.PI/180, dLa=(la2-la1)*R, dLn=(ln2-ln1)*R;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*R)*Math.cos(la2*R)*Math.sin(dLn/2)**2;
+  return 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))/R;
 }
-
 function nearest(lat, lng) {
-  let best = null, bd = Infinity;
-  for (const f of FEATURES) {
-    const d = gcDeg(lat, lng, f.lat, f.lng);
-    if (d < f.r && d < bd) { best = f; bd = d; }
-  }
+  let best=null, bd=Infinity;
+  for (const f of FEATURES) { const d=gcDeg(lat,lng,f.lat,f.lng); if(d<f.r&&d<bd){best=f;bd=d;} }
   return best;
 }
 
-// ── HTML Label Overlays ───────────────────────────────
 FEATURES.forEach(f => {
   const el = document.createElement('div');
-  el.style.cssText = `
-    position:fixed; z-index:5; pointer-events:auto; cursor:pointer;
-    font-family:'Segoe UI',sans-serif; font-weight:700;
-    font-size:${TYPE_SIZE[f.type]}; color:${TYPE_COLOR[f.type]};
-    text-shadow:0 0 6px ${TYPE_COLOR[f.type]},0 0 14px #000028;
-    white-space:nowrap; transform:translate(-50%,-50%);
-    display:none; letter-spacing:0.02em;
-  `;
+  el.style.cssText = `position:fixed;z-index:5;pointer-events:auto;cursor:pointer;font-family:'Segoe UI',sans-serif;font-weight:700;font-size:${TYPE_SIZE[f.type]};color:${TYPE_COLOR[f.type]};text-shadow:0 0 6px ${TYPE_COLOR[f.type]},0 0 14px #000028;white-space:nowrap;transform:translate(-50%,-50%);display:none;letter-spacing:0.02em;`;
   el.textContent = f.name;
   el.addEventListener('mouseenter', () => showTip(f.name, f.emoji, TYPE_COLOR[f.type]));
   el.addEventListener('mouseleave', hideTip);
@@ -233,148 +435,106 @@ FEATURES.forEach(f => {
   f.localV = ll2v(f.lat, f.lng);
 });
 
-// ── Tooltip ───────────────────────────────────────────
 const tipEl = document.getElementById('tooltip');
-let tipX = 0, tipY = 0;
-
+let tipX=0, tipY=0;
 function showTip(name, emoji, color, x, y) {
   tipEl.innerHTML = `${emoji} ${name}<small>Click to open Wikipedia</small>`;
   tipEl.style.borderColor = color;
   tipEl.style.display = 'block';
-  if (x !== undefined) { tipX = x; tipY = y; }
-  tipEl.style.left = tipX + 'px';
-  tipEl.style.top  = tipY + 'px';
+  if (x!==undefined){tipX=x;tipY=y;}
+  tipEl.style.left = tipX+'px'; tipEl.style.top = tipY+'px';
 }
+function hideTip() { tipEl.style.display='none'; }
 
-function hideTip() { tipEl.style.display = 'none'; }
-
-// ── Mouse / Drag / Rotate ─────────────────────────────
-let dragging = false, lastX = 0, lastY = 0;
-let velX = 0, velY = 0;
-let autoSpin = true;
-
-window.addEventListener('mousedown', e => {
-  dragging = true; autoSpin = false;
-  lastX = e.clientX; lastY = e.clientY;
-  velX = 0; velY = 0;
-  hideTip(); clearTimeout(gcTimer);
-});
-
-window.addEventListener('mouseup', () => { dragging = false; });
-
-window.addEventListener('mousemove', e => {
-  if (dragging) {
-    velY = (e.clientX - lastX) * 0.006;
-    velX = (e.clientY - lastY) * 0.004;
-    globe.rotation.y += velY;
-    globe.rotation.x += velX;
-    globe.rotation.x = Math.max(-1.2, Math.min(1.2, globe.rotation.x));
-    lastX = e.clientX; lastY = e.clientY;
-    return;
-  }
-
-  tipX = e.clientX; tipY = e.clientY;
-
-  mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
-  mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObject(globe);
-
-  if (hits.length) {
-    document.getElementById('c').style.cursor = 'pointer';
-    const { lat, lng } = hitLL(hits[0].point);
-    const feat = nearest(lat, lng);
-    if (feat) {
-      clearTimeout(gcTimer);
-      showTip(feat.name, feat.emoji, TYPE_COLOR[feat.type], e.clientX, e.clientY);
-    } else {
-      reverseGeo(lat, lng, e.clientX, e.clientY);
-    }
-  } else {
-    document.getElementById('c').style.cursor = 'grab';
-    clearTimeout(gcTimer);
-    hideTip();
-  }
-});
-
-window.addEventListener('wheel', e => {
-  camera.position.z = Math.max(1.4, Math.min(5, camera.position.z + e.deltaY * 0.003));
-});
-
-window.addEventListener('click', e => {
-  if (Math.abs(e.clientX - lastX) > 4 || Math.abs(e.clientY - lastY) > 4) return;
-  mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
-  mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObject(globe);
-  if (!hits.length) return;
-
-  const { lat, lng } = hitLL(hits[0].point);
-  const feat = nearest(lat, lng);
-  if (feat) { window.open(`https://en.wikipedia.org/wiki/${feat.wiki}`, '_blank'); return; }
-
-  fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
-    .then(r => r.json())
-    .then(d => {
-      const name = d.countryName;
-      if (name) window.open(`https://en.wikipedia.org/wiki/${name.replace(/ /g,'_')}`, '_blank');
-    }).catch(() => {});
-});
-
-// ── Reverse Geocode ───────────────────────────────────
+let dragging=false, lastX=0, lastY=0, velX=0, velY=0, autoSpin=true;
 const raycaster = new THREE.Raycaster();
 const mouse     = new THREE.Vector2();
 let gcTimer = null;
 
-function reverseGeo(lat, lng, x, y) {
+window.addEventListener('mousedown', e => {
+  if (activeLayer) return;
+  dragging=true; autoSpin=false;
+  lastX=e.clientX; lastY=e.clientY; velX=0; velY=0;
+  hideTip(); clearTimeout(gcTimer);
+});
+window.addEventListener('mouseup', () => { dragging=false; });
+window.addEventListener('mousemove', e => {
+  if (activeLayer) return;
+  if (dragging) {
+    velY=(e.clientX-lastX)*0.006; velX=(e.clientY-lastY)*0.004;
+    globe.rotation.y+=velY; globe.rotation.x+=velX;
+    globe.rotation.x=Math.max(-1.2,Math.min(1.2,globe.rotation.x));
+    lastX=e.clientX; lastY=e.clientY; return;
+  }
+  tipX=e.clientX; tipY=e.clientY;
+  mouse.x=(e.clientX/window.innerWidth)*2-1;
+  mouse.y=(e.clientY/window.innerHeight)*-2+1;
+  raycaster.setFromCamera(mouse,camera);
+  const hits=raycaster.intersectObject(globe);
+  if (hits.length) {
+    document.getElementById('c').style.cursor='pointer';
+    const {lat,lng}=hitLL(hits[0].point);
+    const feat=nearest(lat,lng);
+    if (feat) { clearTimeout(gcTimer); showTip(feat.name,feat.emoji,TYPE_COLOR[feat.type],e.clientX,e.clientY); }
+    else reverseGeo(lat,lng,e.clientX,e.clientY);
+  } else {
+    document.getElementById('c').style.cursor='grab';
+    clearTimeout(gcTimer); hideTip();
+  }
+});
+window.addEventListener('wheel', e => {
+  if (activeLayer) return;
+  camera.position.z=Math.max(1.4,Math.min(5,camera.position.z+e.deltaY*0.003));
+});
+window.addEventListener('click', e => {
+  if (activeLayer) return;
+  if (Math.abs(e.clientX-lastX)>4||Math.abs(e.clientY-lastY)>4) return;
+  mouse.x=(e.clientX/window.innerWidth)*2-1;
+  mouse.y=(e.clientY/window.innerHeight)*-2+1;
+  raycaster.setFromCamera(mouse,camera);
+  const hits=raycaster.intersectObject(globe);
+  if (!hits.length) return;
+  const {lat,lng}=hitLL(hits[0].point);
+  const feat=nearest(lat,lng);
+  if (feat){window.open(`https://en.wikipedia.org/wiki/${feat.wiki}`,'_blank');return;}
+  fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
+    .then(r=>r.json()).then(d=>{ if(d.countryName) window.open(`https://en.wikipedia.org/wiki/${d.countryName.replace(/ /g,'_')}`,'_blank'); }).catch(()=>{});
+});
+
+function reverseGeo(lat,lng,x,y) {
   clearTimeout(gcTimer);
-  gcTimer = setTimeout(() => {
+  gcTimer=setTimeout(()=>{
     fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.countryName) showTip(d.countryName, '🌍', 'rgba(244,114,182,0.9)', x, y);
-        else hideTip();
-      }).catch(() => {});
-  }, 180);
+      .then(r=>r.json()).then(d=>{ if(d.countryName) showTip(d.countryName,'🌍','rgba(244,114,182,0.9)',x,y); else hideTip(); }).catch(()=>{});
+  },180);
 }
 
-// ── Project labels each frame ─────────────────────────
-const tempV = new THREE.Vector3();
-
+const tempV=new THREE.Vector3();
 function updateLabels() {
-  FEATURES.forEach(f => {
+  if (activeLayer) { FEATURES.forEach(f=>f.el.style.display='none'); return; }
+  FEATURES.forEach(f=>{
     tempV.copy(f.localV).applyEuler(globe.rotation);
-    const dot = tempV.dot(camera.position.clone().normalize());
-    if (dot < 0.15) { f.el.style.display = 'none'; return; }
-    const proj = tempV.clone().project(camera);
-    const sx = ( proj.x + 1) / 2 * window.innerWidth;
-    const sy = (-proj.y + 1) / 2 * window.innerHeight;
-    f.el.style.display = 'block';
-    f.el.style.left = sx + 'px';
-    f.el.style.top  = sy + 'px';
-    f.el.style.opacity = Math.min(1, (dot - 0.15) * 5).toFixed(2);
+    const dot=tempV.dot(camera.position.clone().normalize());
+    if(dot<0.15){f.el.style.display='none';return;}
+    const proj=tempV.clone().project(camera);
+    f.el.style.display='block';
+    f.el.style.left=(( proj.x+1)/2*window.innerWidth)+'px';
+    f.el.style.top =((-proj.y+1)/2*window.innerHeight)+'px';
+    f.el.style.opacity=Math.min(1,(dot-0.15)*5).toFixed(2);
   });
 }
 
-// ── Animate ───────────────────────────────────────────
-(function animate() {
+(function animate(){
   requestAnimationFrame(animate);
-  if (autoSpin) {
-    globe.rotation.y += 0.0018;
-  } else if (!dragging) {
-    velY *= 0.94; velX *= 0.94;
-    globe.rotation.y += velY;
-    globe.rotation.x += velX;
-    if (Math.abs(velX) < 0.0001 && Math.abs(velY) < 0.0001) autoSpin = true;
-  }
+  if(autoSpin){ globe.rotation.y+=0.0018; }
+  else if(!dragging){ velY*=0.94;velX*=0.94;globe.rotation.y+=velY;globe.rotation.x+=velX; if(Math.abs(velX)<0.0001&&Math.abs(velY)<0.0001)autoSpin=true; }
   updateLabels();
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 })();
 
-// ── Resize ────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth / window.innerHeight;
+window.addEventListener('resize',()=>{
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  camera.aspect=window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
 });
 </script>
